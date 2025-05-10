@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            margin: 30px;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+        h4 {
+            margin-bottom: 0;
+            color: #222;
+        }
+        .facture-header {
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th {
+            background-color: #f1f1f1;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        td {
+            padding: 6px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .total {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 11px;
+            text-align: center;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="facture-header">
+        <h2>🧾 FACTURE</h2>
+        <h4>Client : {{ client }}</h4>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Prix U.</th>
+                <th>Total</th>
+                <th>Payé</th>
+                <th>Reste</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set total_general = 0 %}
+            {% set total_paye = 0 %}
+            {% for v in ventes %}
+            {% set montant_total = v.quantite * v.prix_unitaire %}
+            {% set reste = montant_total - v.montant_paye %}
+            <tr>
+                <td>{{ v.date_vente }}</td>
+                <td>{{ v.produit }}</td>
+                <td>{{ v.quantite }}</td>
+                <td>{{ v.prix_unitaire }}</td>
+                <td>{{ montant_total }}</td>
+                <td>{{ v.montant_paye }}</td>
+                <td>{{ reste }}</td>
+            </tr>
+            {% set total_general = total_general + montant_total %}
+            {% set total_paye = total_paye + v.montant_paye %}
+            {% endfor %}
+            <tr class="total">
+                <td colspan="4" style="text-align:right;">Total général :</td>
+                <td>{{ total_general }}</td>
+                <td>{{ total_paye }}</td>
+                <td>{{ total_general - total_paye }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Facture générée automatiquement depuis votre application de gestion des ventes.
+    </div>
+</body>
+</html>

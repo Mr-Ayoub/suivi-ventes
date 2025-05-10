@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Suivi des ventes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+
+    <h2 class="mb-4">📦 Ajouter une vente</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-success">
+          {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/add" enctype="multipart/form-data" class="row g-3 mb-5">
+        <div class="col-md-6">
+            <input type="text" name="client" class="form-control" placeholder="Nom du client" required>
+        </div>
+        <div class="col-md-6">
+            <input type="text" name="produit" class="form-control" placeholder="Nom du produit" required>
+        </div>
+        <div class="col-md-4">
+            <input type="number" step="0.01" name="quantite" class="form-control" placeholder="Quantité" required>
+        </div>
+        <div class="col-md-4">
+            <input type="number" step="0.01" name="prix_unitaire" class="form-control" placeholder="Prix unitaire" required>
+        </div>
+        <div class="col-md-4">
+            <input type="number" step="0.01" name="montant_paye" class="form-control" placeholder="Montant payé" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">📷 Reçu de paiement</label>
+            <input type="file" name="photo" class="form-control">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-success w-100">Ajouter la vente</button>
+        </div>
+    </form>
+
+    <h3 class="mb-3">🧾 Liste des ventes regroupées par client</h3>
+
+    {% for client, ventes in ventes_par_client.items() %}
+        <div class="border rounded bg-white p-3 mb-4 shadow-sm">
+            <h5 class="text-primary d-flex justify-content-between align-items-center">
+                👤 {{ client }}
+                <a href="/facture/{{ client|urlencode }}" class="btn btn-sm btn-outline-secondary">📄 Télécharger Facture</a>
+            </h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                        <th>Prix Unitaire</th>
+                        <th>Montant Payé</th>
+                        <th>Reçu</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in ventes %}
+                    <tr>
+                        <td>{{ v.date_vente }}</td>
+                        <td>{{ v.produit }}</td>
+                        <td>{{ v.quantite }}</td>
+                        <td>{{ v.prix_unitaire }}</td>
+                        <td>{{ v.montant_paye }}</td>
+                        <td>
+                            {% if v.photo %}
+                                <a href="/uploads/{{ v.photo }}" target="_blank">📷 Voir</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/delete/{{ v.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette vente ?')">🗑️</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
